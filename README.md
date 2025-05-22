@@ -23,7 +23,7 @@
 
 (по умолчанию используется `description` из операции для генерации коментов, если он не найден, то используется `summary` как менее подробный)
 
-Кроме того `summary` проставляется в поле `OperationSummary` в [`oas_handlers_gen.go`](gen_api/oas_handlers_gen.go) и 
+Кроме того `summary` проставляется в поле `OperationSummary` в [`oas_handlers_gen.go`](gen_api/oas_handlers_gen.go#L276) и [`oas_router_gen.go`](gen_api/oas_router_gen.go#306) 
 
 Например `summary` `getUserBook`:
 ```bash
@@ -34,7 +34,7 @@ gen_api/oas_handlers_gen.go:                    OperationSummary: "Get book by i
 gen_api/oas_router_gen.go:                                                      r.summary = "Get book by it's id"
 ```
 
-И `description`:
+И `description` попадает в комментарии к коду:
 ```bash
 grep "Returns a book by book's id" gen_api/*
 ```
@@ -46,8 +46,7 @@ gen_api/oas_server_gen.go:      // Returns a book by book's id.
 gen_api/oas_unimplemented_gen.go:// Returns a book by book's id.
 ```
 
-сами комментарии к сгенерированным методам можно посмореть в [oas_server_gen.go](gen_api/oas_server_gen.go) 
-
+сами комментарии к сгенерированным методам можно посмореть в [oas_server_gen.go](gen_api/oas_server_gen.go#L10) 
 
 например это выглядит так:
 ```yaml
