@@ -1,0 +1,207 @@
+openapi: 3.0.3
+info:
+  title: Library tracker API
+  version: 1.0.0
+  description: CRUD API for book storage management
+
+tags:
+  - name: reading-books
+    description: Progress of reading
+
+servers:
+  - url: 'http://127.0.0.1/'
+
+paths:
+  /users/{user_id}/books:
+    get:
+      tags: [reading-books]
+      operationId: getUserBooks
+      description: Returns list of user's books by their id
+      summary: Get all user's books with current progresses
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: List of books being read
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+
+    post:
+      tags: [reading-books]
+      operationId: addUserBook
+      description: Appends a book to user's list if the list doesn't contain it, if contains, an error returned
+      summary: Add a new book for user
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      responses:
+        '201':
+          description: Book added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '409':
+          description: User is already reading that book
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        
+  /users/{user_id}/books/{book_id}:
+    get:
+      tags: [reading-books]
+      operationId: getUserBook
+      description: Returns a book by user's and book's ids
+      summary: Get book by it's id
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: book_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Book info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: Book or user not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      tags: [reading-books]
+      operationId: updateReadingProgress
+      description: Sets page value to a new one, returns an error if the book doesn't exist
+      summary: Update reading progess with new current page
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: book_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - page
+              properties:
+                page:
+                  type: integer
+                  default: 1
+                  description: New current page
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: Book or user not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    delete:
+      tags: [reading-books]
+      operationId: removeUserBook
+      description: Removes a book by id if exists, otherwise an error returned
+      summary: Remove book (or complete reading)
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: book_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Removed
+        '404':
+          description: Book or user not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Book:
+      type: object
+      description: Book structrure
+      required: [id, title, author, page, published]
+      properties:
+        id: 
+          type: integer
+          description: Uniqie ID of the book from common database
+        page:
+          type: integer
+          description: current page user is reading
+        title:
+          type: string
+          description: Title of the book
+        author:
+          type: string
+          description: Author of the book
+        published:
+          type: string
+          format: date
+          description: Publication date
+    
+    Error:
+      type: object
+      description: Error
+      properties:
+        status_code: 
+          type: integer
+          description: HTTP error code
+        message:
+          type: string
+          description: Error description
+          default: ""
+      required:
+        - status_code
+        - message
+        
