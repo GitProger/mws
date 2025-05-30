@@ -178,7 +178,7 @@ func interactive() {
 					remove(ctx, serv, args[0].(int), args[1].(int))
 				}
 			case "update":
-				if args, ok := parse("wrong format, expected: update <userID> <bookID> <page>", args, "ii"); ok {
+				if args, ok := parse("wrong format, expected: update <userID> <bookID> <page>", args, "iii"); ok {
 					update(ctx, serv, args[0].(int), args[1].(int), args[2].(int))
 				}
 			default:
